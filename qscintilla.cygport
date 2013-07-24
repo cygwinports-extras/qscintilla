@@ -1,0 +1,43 @@
+inherit qt3-qmake
+
+NAME="qscintilla"
+VERSION=1.71
+RELEASE=2
+abi_v=1.7.1
+CATEGORY="Libs"
+SUMMARY="Scintilla editor class for Qt3"
+DESCRIPTION="QScintilla is a port to Qt of Neil Hodgson's Scintilla C++
+editor class."
+HOMEPAGE="http://www.riverbankcomputing.co.uk/software/qscintilla/"
+SRC_URI="mirror://sourceforge/pyqt/QScintilla-${VERSION}-gpl-${abi_v}.tar.gz"
+SRC_DIR="QScintilla-${VERSION}-gpl-${abi_v}"
+PATCH_URI="1.71-vpath.patch"
+
+PKG_NAMES="lib${NAME}7 lib${NAME}-devel"
+libqscintilla7_CONTENTS='usr/bin/cygqscintilla-7.dll usr/share/'
+libqscintilla_devel_CONTENTS='usr/include/ usr/lib/'
+
+src_compile() {
+	lndirs
+	cd ${B}/qt
+	cygqmake3
+	cygmake
+	cd ${B}/designer
+	cygqmake3
+	cygmake
+}
+
+src_install() {
+	local x
+
+	cd ${B}
+	dobin lib/*.dll
+	dolib lib/lib*
+	doqt3inc qt/qextsci*.h
+
+	qt3pluginto designer
+	doqt3plugin plugins/designer/*.dll
+
+	insinto ${QT3_DATADIR}/translations
+	doins qt/*.qm
+}
